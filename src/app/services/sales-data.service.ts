@@ -12,7 +12,7 @@ export class SalesDataService {
     this.headers = new HttpHeaders({'Content-Type': 'application/json; charset=utf-8'});
    }
 
-   public getOrders(page, limit) {
+   public getOrders(page: number, limit: number) {
   
     return this.http.get(this.accessPointUrl + page + '/' + limit, { headers: this.headers });
   }

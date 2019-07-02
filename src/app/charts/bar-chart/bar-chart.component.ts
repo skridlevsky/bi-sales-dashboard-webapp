@@ -1,11 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-
-const SAMPLE_BARCHART_DATA: any[] = [
-  { data: [65, 24, 12, 76, 99, 30, 45], label: 'Autumn Sales' },
-  { data: [23, 54, 75, 13, 64, 76, 44], label: 'Winter Sales' }
-];
-
-const SAMPLE_BARCHART_LABELS: string[] = ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7'];
+import { SalesDataService } from 'src/app/services/sales-data.service';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-bar-chart',
@@ -14,10 +9,14 @@ const SAMPLE_BARCHART_LABELS: string[] = ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W
 })
 export class BarChartComponent implements OnInit {
 
-  constructor() { }
+  constructor(private _salesDataService: SalesDataService) { }
 
-  public barChartData: any[] = SAMPLE_BARCHART_DATA;
-  public barChartLabels: string[] = SAMPLE_BARCHART_LABELS;
+  orders: any;
+  orderLabels: string[];
+  orderData: number[];
+
+  public barChartData: any[];
+  public barChartLabels: string[];
   public barChartType = 'bar';
   public barChartLegend = true;
   public barChartOptions: any = {
@@ -26,6 +25,36 @@ export class BarChartComponent implements OnInit {
   };
 
   ngOnInit() {
+    this._salesDataService.getOrders(1, 100)
+      .subscribe(res => {
+        const localChartData = this.getChartData(res);
+        this.barChartLabels = localChartData.map(x => x[0]).reverse();
+        this.barChartData = [{ 'data': localChartData.map(x => x[1]), 'label': 'Sales'}];
+      });
   }
 
+  getChartData(res) {
+    this.orders = res['page']['data'];
+    const data = this.orders.map(o => o.total);
+
+    const formattedOrders = this.orders.reduce((r, e) => {
+      r.push([moment(e.placed).format('YY-MM-DD'), e.total]);
+      return r;
+    }, []);
+
+    const p = [];
+
+    const chartData = formattedOrders.reduce((r, e) => {
+      const key = e[0];
+      if (!p[key]) {
+        p[key] = e;
+        r.push(p[key]);
+      } else {
+        p[key][1] += e[1];
+      }
+      return r;
+    }, []);
+
+    return chartData;
+  }
 }

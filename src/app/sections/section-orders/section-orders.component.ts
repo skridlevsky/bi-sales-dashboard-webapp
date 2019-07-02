@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Order } from '../../shared/order';
-import { SalesDataService } from '../../sales-data.service';
+import { SalesDataService } from 'src/app/services/sales-data.service';
 
 @Component({
   selector: 'app-section-orders',
@@ -22,8 +22,7 @@ export class SectionOrdersComponent implements OnInit {
   }
 
   getOrders(): void {
-    this._salesData.getOrders(this.page, this.limit)
-      .subscribe(res => {
+    this._salesData.getOrders(this.page, this.limit).subscribe(res => {
         this.orders = res['page']['data'];
         this.total = res['page'].total;
         this.loading = false;
