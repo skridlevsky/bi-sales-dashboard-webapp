@@ -16,4 +16,12 @@ export class SalesDataService {
   
     return this.http.get(this.accessPointUrl + page + '/' + limit, { headers: this.headers });
   }
+
+  public getOrdersByCustomer(n: number) {
+    return this.http.get(this.accessPointUrl + 'bycustomer/' + n, { headers: this.headers });
+  }
+
+  public getOrdersByState() {
+    return this.http.get(this.accessPointUrl + 'bystate/', { headers: this.headers });
+  }
 }
